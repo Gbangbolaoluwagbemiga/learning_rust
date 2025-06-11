@@ -28,7 +28,8 @@ impl Deck {
     }
 
     fn add(&mut self) {
-        self.cards.push("c");
+        let newcard = String::from("Gbenga philip");
+        self.cards.push(newcard);
     }
 }
 
