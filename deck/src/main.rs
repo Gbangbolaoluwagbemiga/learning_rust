@@ -37,6 +37,7 @@ fn main() {
     let mut deck = Deck::new();
     deck.shuffler();
     print!("Here is my deck {:#?}", deck);
+    deck.shuffler();
     deck.add();
     print!("Here is my deck {:#?}", deck);
     // print!("Here is my deck cards {:?}", deck.cards)
