@@ -26,11 +26,17 @@ impl Deck {
         let mut rng = rng();
         self.cards.shuffle(&mut rng);
     }
+
+    fn add(&mut self) {
+        self.cards.push("c");
+    }
 }
 
 fn main() {
     let mut deck = Deck::new();
     deck.shuffler();
+    print!("Here is my deck {:#?}", deck);
+    deck.add();
     print!("Here is my deck {:#?}", deck);
     // print!("Here is my deck cards {:?}", deck.cards)
 }
