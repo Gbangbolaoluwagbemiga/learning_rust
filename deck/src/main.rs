@@ -42,6 +42,8 @@ fn main() {
     deck.shuffler();
     print!("Here is my deck {:#?}", deck);
 
+    let trial = &deck;
+
     // print!("Here is my sliced card {:#?}", deck.cards.len());
     let deal = deck.deal(3);
 
