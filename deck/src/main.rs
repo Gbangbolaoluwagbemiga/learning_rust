@@ -38,9 +38,9 @@ impl Deck {
 }
 
 fn main() {
-    // let mut deck = Deck::new();
-    // deck.shuffler();
-    // print!("Here is my deck {:#?}", deck);
+    let mut deck = Deck::new();
+    deck.shuffler();
+    print!("Here is my deck {:#?}", deck);
 
     // print!("Here is my sliced card {:#?}", deck.cards.len());
     let deal = deck.deal(3);
