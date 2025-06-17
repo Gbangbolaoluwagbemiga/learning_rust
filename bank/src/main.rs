@@ -68,5 +68,14 @@ fn main() {
     print!("your bank summary is {:#?}", bank_summary);
     println!("Total balance {}", bank.total_balance());
 
-    println!("{:#?}", bank);
+    match bank.accounts.get(0..2) {
+        Some(value) => {
+            println!("item:{:#?}", value);
+        }
+        None => {
+            println!("Nothing at this index")
+        }
+    }
+
+    // println!("{:#?}", bank.accounts.get(100));
 }

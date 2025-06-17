@@ -40,5 +40,3 @@ fn main() {
     println!("Audio description {:#?}", movie.description());
     println!("Movie description {:#?}", audio.description());
 }
-
-// description method
