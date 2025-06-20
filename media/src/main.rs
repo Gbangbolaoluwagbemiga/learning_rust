@@ -4,6 +4,8 @@ enum Media {
     Book { director: String, title: String },
     Movie { author: String, title: String },
     Audiobook { title: String },
+    Placeholder,
+    Podcast(u32),
 }
 
 impl Media {
@@ -17,6 +19,12 @@ impl Media {
             }
             Media::Movie { title, author } => {
                 format!("Movie title is {} and the author is {}", title, author)
+            }
+            Media::Placeholder => {
+                format!("Placeholder")
+            }
+            Media::Podcast(any) => {
+                format!("podcast init {} ", { any })
             }
         }
     }
@@ -50,13 +58,14 @@ fn main() {
     let audio = Media::Audiobook {
         title: String::from("Divinely"),
     };
+    let placeholder = Media::Placeholder;
 
     let mut catalog = Catalog::new();
     catalog.add(book);
     catalog.add(movie);
     catalog.add(audio);
 
-    println!("Catalogs are {:#?}", catalog);
+    println!("Catalogs are {:#?}", catalog.items.get(100));
 
     // println!("Book description {:#?}", book.description());
     // println!("Audio description {:#?}", movie.description());

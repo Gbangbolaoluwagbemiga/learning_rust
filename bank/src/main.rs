@@ -43,7 +43,15 @@ impl Account {
         self.balance += amount;
     }
     fn withdraw(&mut self, amount: u32) {
-        self.balance -= amount;
+        match self.balance.checked_sub(amount) {
+            Some(new_balance) => {
+                self.balance -= new_balance;
+            }
+            None => {
+                println!("Insufficient funds for withdrawal");
+                return;
+            }
+        }
     }
 
     fn summary(&self) -> String {
@@ -59,7 +67,7 @@ fn main() {
     account.summary();
     account.deposit(500);
     account2.deposit(300);
-    account.withdraw(100);
+    account.withdraw(1000);
 
     println!("{:?}", account);
     bank.add_account(account);
@@ -77,5 +85,5 @@ fn main() {
         }
     }
 
-    // println!("{:#?}", bank.accounts.get(100));
+    println!("{:#?}", bank.accounts.get(100));
 }
