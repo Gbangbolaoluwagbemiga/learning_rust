@@ -1,5 +1,4 @@
 #[derive(Debug)]
-
 enum Media {
     Book { director: String, title: String },
     Movie { author: String, title: String },
@@ -43,6 +42,13 @@ impl Catalog {
     fn add(&mut self, media: Media) {
         self.items.push(media);
     }
+    fn get_items(&self, id: usize) -> Option<&Media> {
+        if self.items.len() > id {
+            Some(&self.items[id])
+        } else {
+            None
+        }
+    }
 }
 
 fn main() {
@@ -65,7 +71,26 @@ fn main() {
     catalog.add(movie);
     catalog.add(audio);
 
-    println!("Catalogs are {:#?}", catalog.items.get(100));
+    let cataloged = catalog.items.get(10);
+    println!("Catalogs are {:#?}", cataloged.unwrap_or(&placeholder));
+
+    match catalog.items.get(100) {
+        Some(amount) => {
+            println!("Catalog number {:#?}", amount)
+        }
+        None => {
+            println!("There is nothing in here")
+        }
+    }
+
+    match catalog.get_items(100) {
+        Some(id) => {
+            println!("Item is {:#?}", id)
+        }
+        None => {
+            println!("No value here")
+        }
+    }
 
     // println!("Book description {:#?}", book.description());
     // println!("Audio description {:#?}", movie.description());
