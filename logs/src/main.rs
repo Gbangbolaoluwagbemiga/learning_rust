@@ -1,26 +1,26 @@
+use std::fs;
 use std::io::Error;
 
-// Todo: add in a return type
-fn validate_ingredients(ingredients: &Vec<String>) {
-    if ingredients.len() > 3 {
-        // Todo: make it clear that this is an error!
-    } else {
-        // Todo: make it clear that the ingredidents passed
-        // validation. Note that we don't really have any value
-        // to include in the 'Ok' here...
+fn get_errors(logs_data: String) -> String {
+    let mut errors = vec![];
+
+    let logs = logs_data.split("\n");
+    for log in logs {
+        if log.starts_with("ERROR") {
+            errors.push(log);
+        }
     }
+    errors.join("\n")
 }
 
-fn main() {
-    let ingredients = vec![
-        String::from("Cheese"),
-        String::from("Tomatoes"),
-        String::from("Peppers"),
-        String::from("Olives"),
-    ];
+fn main() -> Result<(), Error> {
+    let text = fs::read_to_string("logs.txt")?;
+    let errors = get_errors(text);
+    fs::write("error.txt", errors)?;
 
-    // Todo: validation is an operation that might succeed or fail
-    // Print out a success or fail message based on whether
-    // it passes validation
-    validate_ingredients(&ingredients);
+    Ok(())
+
+    // let text = fs::read_to_string("logs.txt").expect("There is an error with the path");
+    // let errors = get_errors(text);
+    // fs::write("error.txt", errors).expect("Failed to write errors to file");
 }
