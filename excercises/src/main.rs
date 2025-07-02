@@ -16,15 +16,16 @@ struct Account {
 fn main() {
     let mut accounts: Vec<Account> = vec![Account { balance: 0 }, Account { balance: 10 }];
 
-    let account = accounts.first_mut();
+    let account = accounts.last_mut();
 
     match account {
         Some(acc) => {
             acc.balance = 30;
-            println!("Your new account balance is {:#?}", acc.balance)
+            println!("Your new account balance is {:#?}", acc.balance);
+            println!("{:#?}", acc);
         }
         None => {
-            println!("There is no account found here")
+            println!("There is no account found here");
         }
     }
     // println!("{:#?}", account);
