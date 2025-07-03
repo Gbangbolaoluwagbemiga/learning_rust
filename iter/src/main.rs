@@ -56,6 +56,6 @@ fn main() {
     // let exploded = explode(&colors);
     // println!("{:#?}", exploded);
 
-    let found_color = find_color_or(&colors, "asdfasdf", "Orange");
+    let found_color = find_color_or(&colors, "red", "Orange");
     println!("{}", found_color);
 }
