@@ -6,7 +6,7 @@ pub struct Catalog {
 }
 
 impl Catalog {
-    pub fn new() > Self {
+    pub fn new() -> Self {
         Catalog { items: vec![] }
     }
 
