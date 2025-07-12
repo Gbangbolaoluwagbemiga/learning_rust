@@ -35,5 +35,6 @@ fn main() {
     let result = next_language(&languages, "javascript");
     let longest = longest_str(&languages);
 
+    println!("The next language is {:?}", result);
     println!("Longest string is {:?}", longest);
 }
