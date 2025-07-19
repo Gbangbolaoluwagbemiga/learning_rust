@@ -1,112 +1,118 @@
-struct Student {
-    id: u32,
-    name: String,
-    isActive: IsActive,
-}
+use std::fmt::Error;
 
-impl Student {
-    fn new(name: String, id: u32) -> Self {
-        Student {
-            id,
-            name,
-            isActive: IsActive::Active,
-        }
-    }
+#[derive(PartialEq)]
+enum Employee {
+    Media,
+    IT,
+    Manager,
+    SocialMedia,
+    Supervisor,
+    Kitchen,
+}
+#[derive(Debug, PartialEq)]
+enum HasAccess {
+    Affirmative,
+    Negative,
 }
 
 #[derive(Debug, PartialEq)]
-enum IsActive {
+enum IsEmployed {
     Active,
     Inactive,
 }
 
-struct Students {
-    data: Vec<Student>,
-    student_id: u32,
+struct Web3Bridge {
+    employee: Employee,
+    employment_status: IsEmployed,
 }
 
-impl Students {
-    fn new() -> Self {
-        Students {
-            data: Vec::new(),
-            student_id: 1,
+impl Web3Bridge {
+    fn new(employee: Employee) -> Self {
+        Web3Bridge {
+            employee,
+            employment_status: IsEmployed::Active,
         }
     }
 
-    fn iterator(students: &mut Self, id: u32) -> &mut Student {
-        students.data.iter_mut().find(|el| el.id == id).unwrap()
+    fn give_access(&self) -> HasAccess {
+        match self.employee {
+            Employee::Media | Employee::IT | Employee::Manager => HasAccess::Affirmative,
+            _ => HasAccess::Negative,
+        }
     }
 
-    fn add(&mut self, name: String) {
-        let new_student = Student::new(name, self.student_id);
-        self.data.push(new_student);
-        self.student_id += 1;
+    fn has_access(&self) -> Result<bool, Error> {
+        if self.give_access() == HasAccess::Affirmative {
+            println!("I have access");
+            Ok(true)
+        } else {
+            println!("I do not have access");
+            Err(Error)
+        }
     }
 
-    fn leave(&mut self, id: u32) {
-        self.data.iter().find(|el| el.id != id).unwrap();
+    fn is_employed(&self) -> &IsEmployed {
+        &self.employment_status
     }
-
-    fn get_active_students(&self) -> Vec<&Student> {
-        self.data
-            .iter()
-            .filter(|el| el.isActive == IsActive::Active)
-            .collect::<Vec<_>>()
-    }
-
-    fn edit_details(&mut self, id: u32, new_name: String) {
-        let mut detail = Students::iterator(self, id);
-        detail.name = new_name;
-    }
-
-    fn deactivate(&mut self, id: u32) {
-        let mut detail = Students::iterator(self, id);
-        detail.isActive = IsActive::Inactive;
+    fn sacked(&mut self, employee: Employee) {
+        if self.employee == employee {
+            self.employment_status = IsEmployed::Inactive;
+        }
     }
 }
 
-fn main() {
-    print!("Here we go!!!!!!")
+fn main() -> Result<(), Error> {
+    let employee_IT = Web3Bridge::new(Employee::IT);
+    let mut employee_kitchen = Web3Bridge::new(Employee::Kitchen);
+
+    match employee_IT.give_access() {
+        HasAccess::Affirmative => println!("Access granted."),
+        HasAccess::Negative => println!("Access denied."),
+    }
+
+    match employee_IT.is_employed() {
+        IsEmployed::Active => println!("Employee is active."),
+        IsEmployed::Inactive => println!("Employee is inactive."),
+    }
+
+    employee_kitchen.sacked(Employee::Kitchen);
+    match employee_kitchen.is_employed() {
+        IsEmployed::Active => println!("Employee is active."),
+        IsEmployed::Inactive => println!("Employee is inactive."),
+    }
+
+    employee_kitchen.has_access()?;
+    Ok(())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn create_students() -> Students {
-        let mut students = Students::new();
-        students.add("Alice".to_string());
-        students.add("Bob".to_string());
-        students
+    #[test]
+    fn test_employee_access() {
+        let employee = Web3Bridge::new(Employee::IT);
+        assert_eq!(employee.give_access(), HasAccess::Affirmative);
     }
 
     #[test]
-    fn test_add_student() {
-        let mut students = create_students();
-        students.add("Charlie".to_string());
-        assert_eq!(students.data.len(), 3);
-        assert_eq!(students.data[2].name, "Charlie");
+    fn test_employee_employment_status() {
+        let employee = Web3Bridge::new(Employee::Kitchen);
+        assert_eq!(employee.is_employed(), &IsEmployed::Active);
     }
 
     #[test]
-    fn test_edit_student_details() {
-        let mut students = create_students();
-        students.edit_details(1, "Alice Smith".to_string());
-        assert_eq!(students.data[0].name, "Alice Smith");
+    fn test_staff_sacked() {
+        let mut employee = Web3Bridge::new(Employee::Media);
+        employee.sacked(Employee::Media);
+
+        assert_eq!(employee.is_employed(), &IsEmployed::Inactive);
     }
 
     #[test]
-    fn test_deactivate_student() {
-        let mut students = create_students();
-        students.deactivate(1);
-        assert_eq!(students.data[0].isActive, IsActive::Inactive);
-    }
-
-    #[test]
-    fn test_get_active_students() {
-        let students = create_students();
-        let active_students = students.get_active_students();
-        assert!(!active_students.is_empty());
-        assert_eq!(active_students[0].name, "Alice");
+    fn test_access() {
+        let employee = Web3Bridge::new(Employee::Kitchen);
+        employee.give_access();
+        assert_eq!(employee.has_access(), Err(Error));
     }
 }
