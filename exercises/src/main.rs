@@ -1,118 +1,134 @@
-use std::fmt::Error;
+// ### Group 22: Facility Space Manager
 
-#[derive(PartialEq)]
-enum Employee {
-    Media,
-    IT,
-    Manager,
-    SocialMedia,
-    Supervisor,
-    Kitchen,
-}
-#[derive(Debug, PartialEq)]
-enum HasAccess {
-    Affirmative,
-    Negative,
-}
+// - Description: Manage office space allocations.
+// - Stage 1:
+//   - Add space assignments (space name, occupant, purpose).
+//   - View all assignments.
+// - Stage 2:
+//   - Remove assignments.
+// - Stage 3:
+//   - Edit assignment details.
+//   - Cancel edits.
+// - Implementation Tips: Use a `Vec` initially, then a `HashMap` with space name as the key.
 
-#[derive(Debug, PartialEq)]
-enum IsEmployed {
-    Active,
-    Inactive,
+use std::io;
+
+struct Space {
+    name: String,
+    occupant: String,
+    purpose: String,
 }
 
-struct Web3Bridge {
-    employee: Employee,
-    employment_status: IsEmployed,
+struct SpaceManager {
+    spaces: Vec<Space>,
 }
 
-impl Web3Bridge {
-    fn new(employee: Employee) -> Self {
-        Web3Bridge {
-            employee,
-            employment_status: IsEmployed::Active,
-        }
+impl SpaceManager {
+    fn new() -> Self {
+        SpaceManager { spaces: vec![] }
     }
 
-    fn give_access(&self) -> HasAccess {
-        match self.employee {
-            Employee::Media | Employee::IT | Employee::Manager => HasAccess::Affirmative,
-            _ => HasAccess::Negative,
-        }
+    fn input(text: String) -> String {
+        println!("{}", text);
+        let mut prompt = String::new();
+        io::stdin()
+            .read_line(&mut prompt)
+            .expect("something went wrong");
+
+        prompt
     }
 
-    fn has_access(&self) -> Result<bool, Error> {
-        if self.give_access() == HasAccess::Affirmative {
-            println!("I have access");
-            Ok(true)
+    fn add_space(&mut self) {
+        let space_name = Self::input("Enter space name: ".to_string());
+        if !self
+            .spaces
+            .iter_mut()
+            .find(|el| el.name == space_name)
+            .is_some()
+        {
+            let occupant = Self::input("Enter occupant name: ".to_string());
+            let purpose = Self::input("Enter purpose of the space: ".to_string());
+            self.spaces.push(Space {
+                name: space_name.to_string(),
+                occupant: occupant.trim().to_string(),
+                purpose: purpose.trim().to_string(),
+            });
         } else {
-            println!("I do not have access");
-            Err(Error)
+            println!("Space existed already")
         }
     }
 
-    fn is_employed(&self) -> &IsEmployed {
-        &self.employment_status
+    fn view_spaces(&self) {
+        if self.spaces.is_empty() {
+            println!("No spaces available.");
+            return;
+        }
+
+        for space in &self.spaces {
+            println!(
+                "Space: {}, Occupant: {}, Purpose: {}",
+                space.name, space.occupant, space.purpose
+            );
+        }
     }
-    fn sacked(&mut self, employee: Employee) {
-        if self.employee == employee {
-            self.employment_status = IsEmployed::Inactive;
+
+    fn remove_space(&mut self) {
+        let space_name = Self::input("Enter space name: ".to_string());
+
+        if !self.spaces.iter().any(|s| s.name == space_name) {
+            println!("Space does not exist.");
+            return;
+        }
+        self.spaces.retain(|space| space.name != space_name);
+        println!("Space deleted");
+    }
+
+    fn edit_space(&mut self) {
+        let space_name = Self::input("Enter space name: ".to_string());
+        if !self.spaces.iter().any(|s| s.name == space_name) {
+            println!("Space does not exist.");
+            return;
+        }
+
+        if let Some(space) = self.spaces.iter_mut().find(|s| s.name == space_name) {
+            space.occupant = Self::input("Enter new occupant name: ".to_string());
+            space.purpose = Self::input("Enter new purpose: ".to_string());
         }
     }
 }
 
-fn main() -> Result<(), Error> {
-    let employee_IT = Web3Bridge::new(Employee::IT);
-    let mut employee_kitchen = Web3Bridge::new(Employee::Kitchen);
+fn main() {
+    let mut space_manager = SpaceManager::new();
 
-    match employee_IT.give_access() {
-        HasAccess::Affirmative => println!("Access granted."),
-        HasAccess::Negative => println!("Access denied."),
-    }
+    loop {
+        println!("To create a Space, press 1");
+        println!("To view all Spaces, press 2");
+        println!("To edit a Space, press 3");
+        println!("To delete a Space, press 4");
+        println!("To abort, press 5");
 
-    match employee_IT.is_employed() {
-        IsEmployed::Active => println!("Employee is active."),
-        IsEmployed::Inactive => println!("Employee is inactive."),
-    }
+        let mut option = String::new();
 
-    employee_kitchen.sacked(Employee::Kitchen);
-    match employee_kitchen.is_employed() {
-        IsEmployed::Active => println!("Employee is active."),
-        IsEmployed::Inactive => println!("Employee is inactive."),
-    }
+        io::stdin().read_line(&mut option);
 
-    employee_kitchen.has_access()?;
-    Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_employee_access() {
-        let employee = Web3Bridge::new(Employee::IT);
-        assert_eq!(employee.give_access(), HasAccess::Affirmative);
-    }
-
-    #[test]
-    fn test_employee_employment_status() {
-        let employee = Web3Bridge::new(Employee::Kitchen);
-        assert_eq!(employee.is_employed(), &IsEmployed::Active);
-    }
-
-    #[test]
-    fn test_staff_sacked() {
-        let mut employee = Web3Bridge::new(Employee::Media);
-        employee.sacked(Employee::Media);
-
-        assert_eq!(employee.is_employed(), &IsEmployed::Inactive);
-    }
-
-    #[test]
-    fn test_access() {
-        let employee = Web3Bridge::new(Employee::Kitchen);
-        employee.give_access();
-        assert_eq!(employee.has_access(), Err(Error));
+        match option.trim() {
+            "1" => {
+                space_manager.add_space();
+            }
+            "2" => {
+                space_manager.view_spaces();
+            }
+            "3" => {
+                space_manager.edit_space();
+            }
+            "4" => {
+                space_manager.remove_space();
+            }
+            "5" => {
+                println!("Abort!!!");
+                break;
+            }
+            _ => println!("Unrecognized command"),
+        }
     }
 }
