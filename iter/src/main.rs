@@ -62,8 +62,12 @@
 
 use std::env;
 
+use iter::Men;
+
 fn main() {
     let args: Vec<String> = env::args().collect();
+    let men = Men::new();
+    // println!("{men:?}");
 
     let query = &args[1];
     let file_path = &args[2];
